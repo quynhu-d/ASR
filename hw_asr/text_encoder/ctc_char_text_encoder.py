@@ -21,7 +21,7 @@ class CTCCharTextEncoder(CharTextEncoder):
         # TODO: your code here
         raise NotImplementedError()
 
-    def ctc_beam_search(self, probs: torch.tensor, probs_length,
+    def ctc_beam_search(self, probs: torch.tensor,
                         beam_size: int = 100) -> List[Tuple[str, float]]:
         """
         Performs beam search and returns a list of pairs (hypothesis, hypothesis probability).
@@ -29,7 +29,27 @@ class CTCCharTextEncoder(CharTextEncoder):
         assert len(probs.shape) == 2
         char_length, voc_size = probs.shape
         assert voc_size == len(self.ind2char)
-        hypos = []
+#         hypos = []
         # TODO: your code here
-        raise NotImplementedError
+                def extend_and_merge(next_char_probs, src_paths):
+            new_paths = defaultdict(float)
+            for next_char_ind, next_char_prob in enumerate(next_char_probs):
+                next_char = self.ind2char[next_char_ind]
+                for (text, last_char), path_prob in src_paths.items():
+                    new_prefix = text if next_char == last_char else (text + next_char)
+                    new_prefix = new_prefix.replace(self.EMPTY_TOK, '')
+                    new_paths[(new_prefix, next_char)] += path_prob * next_char_prob
+            return new_paths
+
+        def truncate_beam(paths, beam_size):
+            return dict(sorted(paths.items(), key=lambda x: x[1])[-beam_size:])
+
+        # hypos = []
+        # TODO: your code here
+        paths = {('', self.EMPTY_TOK): 1.0}
+        for next_char_probs in tqdm(probs):
+            paths = extend_and_merge(next_char_probs, paths)
+            paths = truncate_beam(paths, beam_size)
+        # raise NotImplementedError
+        hypos = [(prefix, score.item()) for (prefix, _), score in paths.items()]
         return sorted(hypos, key=lambda x: x[1], reverse=True)
