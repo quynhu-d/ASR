@@ -31,7 +31,7 @@ class CTCCharTextEncoder(CharTextEncoder):
         assert voc_size == len(self.ind2char)
 #         hypos = []
         # TODO: your code here
-                def extend_and_merge(next_char_probs, src_paths):
+        def extend_and_merge(next_char_probs, src_paths):
             new_paths = defaultdict(float)
             for next_char_ind, next_char_prob in enumerate(next_char_probs):
                 next_char = self.ind2char[next_char_ind]
