@@ -44,7 +44,9 @@ class Trainer(BaseTrainer):
             self.len_epoch = len(self.data_loader)
         else:
             # iteration-based training
-            self.data_loader = inf_loop(data_loader)
+            if config['data']['train'].get("shuffle", 1):
+                print('Using inf_loop for train dataloader')
+                self.data_loader = inf_loop(data_loader)
             self.len_epoch = len_epoch
         self.valid_data_loader = valid_data_loader
         self.do_validation = self.valid_data_loader is not None
@@ -86,6 +88,7 @@ class Trainer(BaseTrainer):
         for batch_idx, batch in enumerate(
                 tqdm(self.data_loader, desc="train", total=self.len_epoch)
         ):
+            print(batch['text'])
             try:
                 batch = self.process_batch(
                     batch,
@@ -116,7 +119,7 @@ class Trainer(BaseTrainer):
                 self._log_predictions(part="train", **batch)
                 self._log_spectrogram(batch["spectrogram"])
                 self._log_scalars(self.train_metrics)
-            if batch_idx >= self.len_epoch:
+            if batch_idx >= self.len_epoch - 1:
                 break
         log = self.train_metrics.result()
 
@@ -137,6 +140,7 @@ class Trainer(BaseTrainer):
             batch["logits"] = outputs
 
         batch["log_probs"] = F.log_softmax(batch["logits"], dim=-1)
+        print(batch["log_probs"].shape)
         batch["log_probs_length"] = self.model.transform_input_lengths(
             batch["spectrogram_length"]
         )
