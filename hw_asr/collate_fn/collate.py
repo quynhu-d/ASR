@@ -1,5 +1,6 @@
 import logging
 from typing import List
+import torch
 
 logger = logging.getLogger(__name__)
 
