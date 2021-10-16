@@ -7,7 +7,7 @@ from hw_asr.base import BaseModel
 class LSTMModel(BaseModel):
     def __init__(self, n_feats, n_class, fc_hidden=512, *args, **kwargs):
         super().__init__(n_feats, n_class, *args, **kwargs)
-        self.rnn = nn.LSTM(input_size=n_feats, num_layers=3, hidden_size=fc_hidden, batch_first=True)
+        self.rnn = nn.LSTM(input_size=n_feats, hidden_size=fc_hidden, batch_first=True)
         self.fc_hidden = fc_hidden
         self.n_feats = n_feats
         self.clf = nn.Linear(fc_hidden, n_class)
