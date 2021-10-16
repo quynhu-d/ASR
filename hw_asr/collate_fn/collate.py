@@ -20,7 +20,8 @@ def collate_fn(dataset_items: List[dict]):
     for i, (item, text_length, spec_length) in enumerate(zip(
             dataset_items, text_time_lengths, spec_time_lengths)):
         batch_text_encoded[i, :text_length] = item['text_encoded'].squeeze()
-        batch_spectrogram[i, :spec_length, :] = item['spectrogram'].T.squeeze()
+        batch_spectrogram[i, :spec_length, :] = item['spectrogram'].squeeze().transpose(0, 1)
+
     return {
         'text_encoded': batch_text_encoded,
         'text_encoded_length': torch.tensor(text_time_lengths),
