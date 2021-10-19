@@ -36,20 +36,6 @@
           }
         }
       ]
-    },
-    "val": {
-      "batch_size": 20,
-      "num_workers": 5,
-      "datasets": [
-        {
-          "type": "LibrispeechDataset",
-          "args": {
-            "part": "dev-clean",
-            "max_audio_length": 20.0,
-            "max_text_length": 200
-          }
-        }
-      ]
     }
   },
   "optimizer": {
