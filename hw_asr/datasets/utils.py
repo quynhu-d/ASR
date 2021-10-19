@@ -11,7 +11,7 @@ from hw_asr.utils.parse_config import ConfigParser
 
 
 def get_dataloaders(configs: ConfigParser, text_encoder: BaseTextEncoder):
-    dataloaders = {}
+    dataloaders = {'train': None, 'val': None}
     for split, params in configs["data"].items():
         num_workers = params.get("num_workers", 1)
 
@@ -52,5 +52,4 @@ def get_dataloaders(configs: ConfigParser, text_encoder: BaseTextEncoder):
             dataset, batch_size=bs, collate_fn=collate_fn,
             shuffle=shuffle, num_workers=num_workers, batch_sampler=batch_sampler)
         dataloaders[split] = dataloader
-        print(split, 'shuffle:', shuffle)
     return dataloaders
