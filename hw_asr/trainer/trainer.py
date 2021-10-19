@@ -88,7 +88,6 @@ class Trainer(BaseTrainer):
         ):
             if batch_idx >= self.len_epoch:
                 break
-            print(batch['text'])
             try:
                 batch = self.process_batch(
                     batch,
