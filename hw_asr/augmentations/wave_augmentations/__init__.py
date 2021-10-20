@@ -13,7 +13,15 @@ from hw_asr.augmentations.wave_augmentations.ShuffleChannels import ShuffleChann
 
 __all__ = [
     "AddBackgroundNoise",
+    "AddColoredNoise",
+    "ApplyImpulseResponse",
+    "BandPassFilter",
     "Gain",
+    "HighPassFilter",
+    "LowPassFilter",
     "PeakNormalization",
+    "PitchShift",
     "PolarityInversion",
+    "Shift",
+    "ShuffleChannels"
 ]
