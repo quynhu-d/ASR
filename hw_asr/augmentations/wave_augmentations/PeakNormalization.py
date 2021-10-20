@@ -5,6 +5,17 @@ from hw_asr.augmentations.base import AugmentationBase
 
 
 class PeakNormalization(AugmentationBase):
+    """
+    Apply a constant amount of gain, so that highest signal level present in each audio snippet
+    in the batch becomes 0 dBFS, i.e. the loudest level allowed if all samples must be between
+    -1 and 1.
+
+    This transform has an alternative mode (apply_to="only_too_loud_sounds") where it only
+    applies to audio snippets that have extreme values outside the [-1, 1] range. This is useful
+    for avoiding digital clipping in audio that is too loud, while leaving other audio
+    untouched.
+    """
+
     def __init__(self, *args, **kwargs):
         self._aug = torch_audiomentations.PeakNormalization(*args, **kwargs)
 

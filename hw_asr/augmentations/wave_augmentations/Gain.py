@@ -5,6 +5,15 @@ from hw_asr.augmentations.base import AugmentationBase
 
 
 class Gain(AugmentationBase):
+    """
+        min_gain_in_db: float = -18.0,
+        max_gain_in_db: float = 6.0,
+        mode: str = "per_example",
+        p: float = 0.5,
+        p_mode: typing.Optional[str] = None,
+        sample_rate: typing.Optional[int] = None,
+
+    """
     def __init__(self, *args, **kwargs):
         self._aug = torch_audiomentations.Gain(*args, **kwargs)
 
