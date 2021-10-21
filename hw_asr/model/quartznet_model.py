@@ -19,7 +19,7 @@ class QuartzBaseModule(nn.Module):
         if not padding:
             padding = kernel_size // 2
         self.module = Sequential(
-            nn.Conv1d(c_in, c_out, kernel_size, stride=stride, groups=c_in, padding=padding),
+            nn.Conv1d(c_in, c_in, kernel_size, stride=stride, groups=c_in, padding=padding),
             nn.Conv1d(c_in, c_out, 1),
             nn.BatchNorm1d(c_out)
         )
@@ -53,7 +53,7 @@ class QuartzBBlock(nn.Module):
         blocks.extend(
             [
                 self.activation,
-                QuartzBaseModule(self.c_in, self.c_out, self.kernel_size),
+                QuartzBaseModule(self.c_out, self.c_out, self.kernel_size),
             ] * (n_cells - 1)
         )
         self.blocks = Sequential(*blocks)
