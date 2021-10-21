@@ -65,7 +65,14 @@
         }
       }
     ],
-    "spectrogram": []
+    "spectrogram": [
+      {
+        "type": "TimeMasking",
+        "args": {
+          "time_mask_param": 80
+        }
+      }
+    ]
   },
   "arch": {
     "type": "LSTMModel",
