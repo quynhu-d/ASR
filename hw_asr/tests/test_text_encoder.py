@@ -14,7 +14,6 @@ class TestTextEncoder(unittest.TestCase):
         self.assertIn(decoded_text, true_text)
 
     def test_beam_search(self):
-        # TODO: (optional) write tests for beam search
         text_encoder = CTCCharTextEncoder('ab')
         probs = torch.tensor([[.2, .5, .3], [.8, .1, .1], [.1, .85, .05]])
         true = [('aa', .3400000035762787), ('ba', .20400001108646393), ('a', .13600000739097595)]
