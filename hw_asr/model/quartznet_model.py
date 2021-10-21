@@ -12,12 +12,14 @@ class QuartzBaseModule(nn.Module):
             c_in: int,
             c_out: int,
             kernel_size: int,
-            stride: int = 1
+            stride: int = 1,
+            padding: int = None
     ):
         super(QuartzBaseModule, self).__init__()
-
+        if not padding:
+            padding = kernel_size // 2
         self.module = Sequential(
-            nn.Conv1d(c_in, c_out, kernel_size, stride=stride, groups=c_in, padding='same'),
+            nn.Conv1d(c_in, c_out, kernel_size, stride=stride, groups=c_in, padding=padding),
             nn.Conv1d(c_in, c_out, 1),
             nn.BatchNorm1d(c_out)
         )
@@ -78,6 +80,9 @@ class QuartzNet(BaseModel):
             n_feats -- number of features (mels)
             n_class -- number of classes
             n_bblocks -- how many times B block is repeated
+                1 -- QN 5x5
+                2 -- QN 10x5
+                3 -- QN 15x5
             n_bmodules -- how many times a module is repeated
         """
 
