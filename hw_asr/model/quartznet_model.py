@@ -38,7 +38,7 @@ class QuartzBBlock(nn.Module):
             c_out: int = 256,
             kernel_size: int = 33,
             n_cells: int = 5,
-            dropout: float = 0.2):
+            dropout_p: float = .2):
 
         super(QuartzBBlock, self).__init__()
 
@@ -46,13 +46,15 @@ class QuartzBBlock(nn.Module):
         self.c_in = c_in
         self.c_out = c_out
         self.kernel_size = kernel_size
-        self.dropout = dropout
+        self.dropout_p = dropout_p
+        self.dropout = nn.Dropout(dropout_p)
         self.activation = nn.ReLU()
 
         blocks = [QuartzBaseModule(self.c_in, self.c_out, self.kernel_size)]
         blocks.extend(
             [
                 self.activation,
+                nn.Dropout(self.dropout_p),
                 QuartzBaseModule(self.c_out, self.c_out, self.kernel_size),
             ] * (n_cells - 1)
         )
@@ -64,7 +66,7 @@ class QuartzBBlock(nn.Module):
 
     def forward(self, input: Tensor):
         outputs = self.blocks(input)
-        return self.activation(outputs + self.res_block(input))
+        return self.dropout(self.activation(outputs + self.res_block(input)))
 
 
 class QuartzNet(BaseModel):
@@ -74,6 +76,7 @@ class QuartzNet(BaseModel):
             n_class: int,
             n_bblocks: int = 1,    # S parameter (how many times a B block is repeated)
             n_bmodules: int = 5,    # R parameter (how many times a module in each B block is repeated)
+            dropout_p: float = .2,
             *args, **kwargs):
 
         """
@@ -96,30 +99,36 @@ class QuartzNet(BaseModel):
         self.b_channels = [256, 256, 512, 512, 512]
         self.c_kernel_sizes = [33, 87, 1]    # for c1-3
         self.c_channels = [256, 512, 1024]    # for c1-3
+        self.dropout_p = dropout_p
 
         # Conv-BN-ReLU-1: stride=2
         self.conv1 = Sequential(
             QuartzBaseModule(self.n_feats, self.c_channels[0], self.c_kernel_sizes[0], 2),
-            self.activation
+            self.activation,
+            nn.Dropout(self.dropout_p)
         )
         # B blocks
         b_blocks = []
         cur_b_c_in = self.c_channels[0]
         for i, (b_ks, b_c_out) in enumerate(zip(self.b_kernel_sizes, self.b_channels)):
-            b_blocks.append(QuartzBBlock(cur_b_c_in, b_c_out, n_cells=b_ks))
-            b_blocks.extend([QuartzBBlock(b_c_out, b_c_out, n_cells=b_ks)] * (self.n_bblocks - 1))
+            b_blocks.append(QuartzBBlock(cur_b_c_in, b_c_out, n_cells=b_ks, dropout_p=self.dropout_p))
+            b_blocks.extend(
+                [QuartzBBlock(b_c_out, b_c_out, n_cells=b_ks, dropout_p=self.dropout_p)] * (self.n_bblocks - 1)
+            )
             cur_b_c_in = b_c_out
         self.b_blocks = Sequential(*b_blocks)
 
         # Conv-BN-ReLU-2
         self.conv2 = Sequential(
             QuartzBaseModule(self.b_channels[-1], self.c_channels[1], self.c_kernel_sizes[1]),
-            self.activation
+            self.activation,
+            nn.Dropout(self.dropout_p)
         )
         # Conv-BN-ReLU-3
         self.conv3 = Sequential(
             QuartzBaseModule(self.c_channels[1], self.c_channels[2], self.c_kernel_sizes[2]),
-            self.activation
+            self.activation,
+            nn.Dropout(self.dropout_p)
         )
         # Conv-BN-ReLU-4: pointwise conv, dilation=2
         self.conv4 = nn.Conv1d(self.c_channels[-1], self.n_class, 1, dilation=2)
