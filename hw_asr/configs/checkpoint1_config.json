@@ -27,21 +27,6 @@
   },
   "data": {
     "train": {
-      "shuffle": 0,
-      "batch_size": 20,
-      "num_workers": 5,
-      "datasets": [
-        {
-          "type": "LibrispeechDataset",
-          "args": {
-            "part": "train-clean-100",
-            "max_audio_length": 60.0,
-            "max_text_length": 3000
-          }
-        }
-      ]
-    },
-    "val": {
       "batch_size": 20,
       "num_workers": 5,
       "datasets": [
@@ -49,8 +34,9 @@
           "type": "LibrispeechDataset",
           "args": {
             "part": "dev-clean",
-            "max_audio_length": 20.0,
-            "max_text_length": 200
+            "max_audio_length": 60.0,
+            "max_text_length": 3000,
+            "limit": 20
           }
         }
       ]
