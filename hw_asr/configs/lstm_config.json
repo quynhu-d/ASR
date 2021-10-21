@@ -22,7 +22,6 @@
   },
   "data": {
     "train": {
-      "shuffle": 0,
       "batch_size": 20,
       "num_workers": 5,
       "datasets": [
