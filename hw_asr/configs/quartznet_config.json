@@ -21,6 +21,14 @@
         }
       },
       {
+        "type": "Gain",
+        "args": {
+          "p": 0.5,
+          "min_gain_in_db": -18.0,
+          "max_gain_in_db": 6.0
+        }
+      },
+      {
         "type": "PitchShift",
         "args": {
           "p": 0.5,
@@ -35,6 +43,13 @@
           "min_shift": -0.5,
           "max_shift": 0.5,
           "rollover": "True"
+        }
+      },
+      {
+        "type": "PeakNormalization",
+        "args": {
+          "p": 0.5,
+          "apply_to": "only_too_loud_sounds"
         }
       }
     ],
