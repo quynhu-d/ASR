@@ -10,5 +10,5 @@ class FrequencyMasking(AugmentationBase):
         self._aug = torchaudio.transforms.FrequencyMasking(*args, **kwargs)
 
     def __call__(self, data: Tensor):
-        x = data.unsqueeze(1).transpose(1, 2)    # freq-first
+        x = data.transpose(1, 2).unsqueeze(1)    # freq-first
         return self._aug(x).squeeze(1).transpose(1, 2)    # time-first
