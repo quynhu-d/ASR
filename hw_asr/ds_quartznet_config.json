@@ -58,7 +58,8 @@
         "type": "TimeStretch",
         "args": {
           "n_freq": 128,
-          "fixed_rate": 0.7
+          "min_rate": 0.8,
+          "max_rate": 1.2
         }
       },
       {
