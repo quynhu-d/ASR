@@ -73,7 +73,6 @@
     "args": {
       "n_feats": 128,
       "n_bblocks": 3
-      "n_bblocks": 3
     }
   },
   "data": {
