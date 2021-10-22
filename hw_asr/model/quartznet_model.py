@@ -111,9 +111,17 @@ class QuartzNet(BaseModel):
         b_blocks = []
         cur_b_c_in = self.c_channels[0]
         for i, (b_ks, b_c_out) in enumerate(zip(self.b_kernel_sizes, self.b_channels)):
-            b_blocks.append(QuartzBBlock(cur_b_c_in, b_c_out, n_cells=b_ks, dropout_p=self.dropout_p))
+            b_blocks.append(
+                QuartzBBlock(
+                    cur_b_c_in, b_c_out, kernel_size=b_ks, n_cells=self.n_bmodules, dropout_p=self.dropout_p
+                )
+            )
             b_blocks.extend(
-                [QuartzBBlock(b_c_out, b_c_out, n_cells=b_ks, dropout_p=self.dropout_p)] * (self.n_bblocks - 1)
+                [
+                    QuartzBBlock(
+                        b_c_out, b_c_out, kernel_size=b_ks, n_cells=self.n_bmodules, dropout_p=self.dropout_p
+                    )
+                ] * (self.n_bblocks - 1)
             )
             cur_b_c_in = b_c_out
         self.b_blocks = Sequential(*b_blocks)
