@@ -71,12 +71,14 @@
   "arch": {
     "type": "QuartzNet",
     "args": {
-      "n_feats": 128
+      "n_feats": 128,
+      "n_bblocks": 3
+      "n_bblocks": 3
     }
   },
   "data": {
     "train": {
-      "batch_size": 128,
+      "batch_size": 32,
       "num_workers": 5,
       "datasets": [
         {
@@ -90,7 +92,7 @@
       ]
     },
     "val": {
-      "batch_size": 128,
+      "batch_size": 32,
       "num_workers": 5,
       "datasets": [
         {
@@ -105,9 +107,10 @@
     }
   },
   "optimizer": {
-    "type": "Adam",
+    "type": "Adagrad",
     "args": {
-      "lr": 3e-4
+      "lr": 0.05,
+      "weight_decay": 0.001
     }
   },
   "loss": {
@@ -129,17 +132,13 @@
     }
   ],
   "lr_scheduler": {
-    "type": "OneCycleLR",
+    "type": "CosineAnnealingWarmRestarts",
     "args": {
-      "steps_per_epoch": 100,
-      "epochs": 100,
-      "anneal_strategy": "cos",
-      "max_lr": 4e-3,
-      "pct_start": 0.2
+      "T_0": 1000
     }
   },
   "trainer": {
-    "epochs": 100,
+    "epochs": 400,
     "save_dir": "saved/",
     "save_period": 5,
     "verbosity": 2,
