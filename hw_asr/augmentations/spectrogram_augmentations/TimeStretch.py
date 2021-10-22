@@ -10,5 +10,5 @@ class TimeStretch(AugmentationBase):
         self._aug = torchaudio.transforms.TimeStretch(*args, **kwargs)
 
     def __call__(self, data: Tensor):
-        x = data.unsqueeze(1).type(torch.complex128)    # pass complex spectrogram of shape B * F * T
-        return self._aug(x).squeeze(1).type(torch.float64)
+        x = data.type(torch.complex128)    # pass complex spectrogram of shape B * F * T
+        return self._aug(x).type(torch.float64)
