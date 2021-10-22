@@ -95,8 +95,14 @@ class QuartzNet(BaseModel):
         self.n_bblocks = n_bblocks
         self.n_bmodules = n_bmodules
         self.activation = nn.ReLU()
-        self.b_kernel_sizes = [33, 39, 51, 63, 75]
-        self.b_channels = [256, 256, 512, 512, 512]
+        if n_bmodules == 3:
+            self.b_kernel_sizes = [63, 63, 75, 75, 75]
+        else:
+            self.b_kernel_sizes = [33, 39, 51, 63, 75]    # n_bmodules == 5
+        if n_bmodules == 3:
+            self.b_channels = [512] * 5
+        else:
+            self.b_channels = [256, 256, 512, 512, 512]    # n_bmodules == 5
         self.c_kernel_sizes = [33, 87, 1]    # for c1-3
         self.c_channels = [256, 512, 1024]    # for c1-3
         self.dropout_p = dropout_p
