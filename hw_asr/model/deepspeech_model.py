@@ -71,8 +71,18 @@ class BidirectionalGRU(nn.Module):
 class DeepSpeechModel(BaseModel):
     """Speech Recognition Model Inspired by DeepSpeech 2"""
 
-    def __init__(self, n_cnn_layers, n_rnn_layers, rnn_dim, n_class, n_feats, stride=2, dropout=0.1, *args, **kwargs):
+    def __init__(
+            self,
+            n_feats: int,
+            n_class: int,
+            n_cnn_layers: int = 2,
+            n_rnn_layers: int = 3,
+            rnn_dim: int = 128,
+            stride: int = 2,
+            dropout: float = 0.1,
+            *args, **kwargs):
         super().__init__(n_feats, n_class, *args, **kwargs)
+
         n_feats = n_feats // 2
         self.cnn = nn.Conv2d(1, 32, 3, stride=stride, padding=3 // 2)  # cnn for extracting hierarchical features
 
@@ -106,4 +116,4 @@ class DeepSpeechModel(BaseModel):
         return x
 
     def transform_input_lengths(self, input_lengths):
-        return input_lengths
+        return input_lengths // 2
