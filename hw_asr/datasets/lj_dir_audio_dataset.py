@@ -13,7 +13,7 @@ class LJDirAudioDataset(CustomAudioDataset):
     def __init__(self, audio_dir, transcription_csv=None, *args, **kwargs):
         data = []
         transc_csv = pd.read_csv(transcription_csv, delimiter='|', header=None)
-        transc_csv.rename(columns={0: 'id', 1: 'text', 2: 'norm_text'})
+        transc_csv.rename(columns={0: 'id', 1: 'text', 2: 'norm_text'}, inplace=True)
         for path in Path(audio_dir).iterdir():
             entry = {}
             if path.suffix in [".mp3", ".wav", ".flac", ".m4a"]:
