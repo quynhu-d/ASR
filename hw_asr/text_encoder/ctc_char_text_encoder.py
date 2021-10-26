@@ -32,13 +32,13 @@ class CTCCharTextEncoder(CharTextEncoder):
                     res.append(ind)
                 last_blank = False
         return ''.join([self.ind2char[c] for c in res])
-        # raise NotImplementedError()
 
-    def ctc_beam_search(self, probs: torch.tensor, beam_size: int = 100) -> List[Tuple[str, float]]:
+    def ctc_beam_search(self, probs: torch.tensor, probs_length: int = None, beam_size: int = 100, verbose: bool = False) -> List[Tuple[str, float]]:
         """
         Performs beam search and returns a list of pairs (hypothesis, hypothesis probability).
         """
         assert len(probs.shape) == 2
+        probs = probs[:probs_length, :]
         char_length, voc_size = probs.shape
         assert voc_size == len(self.ind2char)
 
@@ -57,9 +57,8 @@ class CTCCharTextEncoder(CharTextEncoder):
 
         # hypos = []
         paths = {('', self.EMPTY_TOK): 1.0}
-        for next_char_probs in tqdm(probs):
+        for next_char_probs in tqdm(probs, desc="Beam search", leave=False) if verbose else probs:
             paths = extend_and_merge(next_char_probs, paths)
             paths = truncate_beam(paths, beam_size)
-        # raise NotImplementedError
         hypos = [(prefix, score.item()) for (prefix, _), score in paths.items()]
         return sorted(hypos, key=lambda x: x[1], reverse=True)

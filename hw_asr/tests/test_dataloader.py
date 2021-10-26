@@ -78,6 +78,8 @@ class TestLJDataloader(unittest.TestCase):
         self.assertEqual(bs, BS)
         print(batch['text'])
         print(batch['text_encoded'])
+        print(batch.keys())
+        print(batch["audio"])
         return batch
 
 

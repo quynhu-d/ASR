@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 import torch
-from tqdm import tqdm
+from tqdm import tqdm, trange
 
 import hw_asr.model as module_model
 from hw_asr.datasets.utils import get_dataloaders
@@ -30,21 +30,21 @@ def main(config, out_file):
     logger.info(model)
 
     logger.info("Loading checkpoint: {} ...".format(config.resume))
-    checkpoint = torch.load(config.resume)
+    # prepare model for testing
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    checkpoint = torch.load(config.resume, map_location=device)
     state_dict = checkpoint["state_dict"]
     if config["n_gpu"] > 1:
         model = torch.nn.DataParallel(model)
     model.load_state_dict(state_dict)
 
-    # prepare model for testing
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     model.eval()
 
     results = []
 
     with torch.no_grad():
-        for batch_num, batch in enumerate(tqdm(dataloaders["test"])):
+        for batch_num, batch in enumerate(tqdm(dataloaders["test"], desc="Testing...")):
             batch = Trainer.move_batch_to_device(batch, device)
             output = model(**batch)
             if type(output) is dict:
@@ -57,7 +57,7 @@ def main(config, out_file):
             )
             batch["probs"] = batch["log_probs"].exp().cpu()
             batch["argmax"] = batch["probs"].argmax(-1)
-            for i in range(len(batch["text"])):
+            for i in trange(len(batch["text"]), desc="Getting predictions for batch...", leave=False):
                 argmax = batch["argmax"][i]
                 argmax = argmax[:int(batch["log_probs_length"][i])]
                 results.append(
