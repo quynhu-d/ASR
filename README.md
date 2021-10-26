@@ -8,6 +8,7 @@ pip install -r ./requirements.txt
 ## Report
 Report at [colab notebook](https://colab.research.google.com/drive/13EARXqEvQ7H13YszFym4_AKno0Q6MeQL?usp=sharing) includes:
 - running of tests
+- examples of augmentations
 - how to run train.py and test.py
 - which models were used with which configs
 - results of the runs (links to [wandb](https://wandb.ai/quynhu_d/asr_project/table?workspace=user-quynhu_d) logs)
