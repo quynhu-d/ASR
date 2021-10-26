@@ -111,6 +111,19 @@
           }
         }
       ]
+    },
+    "test": {
+      "batch_size": 32,
+      "num_workers": 5,
+      "datasets": [
+        {
+          "type": "LibrispeechDataset",
+          "args": {
+            "part": "test-clean",
+            "data_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/librispeech"
+          }
+        }
+      ]
     }
   },
   "optimizer": {

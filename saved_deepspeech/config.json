@@ -1,0 +1,159 @@
+{
+    "name": "deepspeech_config",
+    "n_gpu": 1,
+    "preprocessing": {
+        "sr": 16000,
+        "spectrogram": {
+            "type": "MelSpectrogram",
+            "args": {}
+        }
+    },
+    "augmentations": {
+        "wave": [
+            {
+                "type": "AddColoredNoise",
+                "args": {
+                    "p": 0.5,
+                    "sample_rate": 16000,
+                    "min_f_decay": -4.0,
+                    "max_f_decay": 4.0
+                }
+            },
+            {
+                "type": "Gain",
+                "args": {
+                    "p": 0.2,
+                    "min_gain_in_db": -18.0,
+                    "max_gain_in_db": 6.0
+                }
+            },
+            {
+                "type": "PitchShift",
+                "args": {
+                    "p": 0.2,
+                    "sample_rate": 16000,
+                    "min_transpose_semitones": -4.0,
+                    "max_transpose_semitones": 4.0
+                }
+            },
+            {
+                "type": "Shift",
+                "args": {
+                    "min_shift": -0.5,
+                    "max_shift": 0.5,
+                    "rollover": "True"
+                }
+            },
+            {
+                "type": "PeakNormalization",
+                "args": {
+                    "p": 0.2,
+                    "apply_to": "only_too_loud_sounds"
+                }
+            }
+        ],
+        "spectrogram": [
+            {
+                "type": "TimeStretch",
+                "args": {
+                    "n_freq": 128,
+                    "min_rate": 0.7,
+                    "max_rate": 1.2
+                }
+            },
+            {
+                "type": "TimeMasking",
+                "args": {
+                    "time_mask_param": 10
+                }
+            },
+            {
+                "type": "FrequencyMasking",
+                "args": {
+                    "freq_mask_param": 10
+                }
+            }
+        ]
+    },
+    "arch": {
+        "type": "DeepSpeechModel",
+        "args": {
+            "n_feats": 128
+        }
+    },
+    "data": {
+        "train": {
+            "batch_size": 32,
+            "num_workers": 5,
+            "datasets": [
+                {
+                    "type": "LibrispeechDataset",
+                    "args": {
+                        "part": "train-clean-360",
+                        "data_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/librispeech"
+                    }
+                }
+            ]
+        },
+        "val": {
+            "batch_size": 32,
+            "num_workers": 5,
+            "datasets": [
+                {
+                    "type": "LibrispeechDataset",
+                    "args": {
+                        "part": "dev-clean",
+                        "max_audio_length": 60.0,
+                        "max_text_length": 300,
+                        "data_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/librispeech"
+                    }
+                }
+            ]
+        }
+    },
+    "optimizer": {
+        "type": "AdamW",
+        "args": {
+            "lr": 0.0006
+        }
+    },
+    "loss": {
+        "type": "CTCLoss",
+        "args": {}
+    },
+    "metrics": [
+        {
+            "type": "ArgmaxWERMetric",
+            "args": {
+                "name": "WER (argmax)"
+            }
+        },
+        {
+            "type": "ArgmaxCERMetric",
+            "args": {
+                "name": "CER (argmax)"
+            }
+        }
+    ],
+    "lr_scheduler": {
+        "type": "OneCycleLR",
+        "args": {
+            "max_lr": 0.0006,
+            "epochs": 400,
+            "steps_per_epoch": 100,
+            "anneal_strategy": "linear"
+        }
+    },
+    "trainer": {
+        "epochs": 400,
+        "save_dir": "saved/",
+        "save_period": 5,
+        "verbosity": 2,
+        "monitor": "min val_loss",
+        "early_stop": 100,
+        "len_epoch": 100,
+        "visualize": "wandb",
+        "wandb_project": "asr_project",
+        "grad_norm_clip": 10
+    }
+}
