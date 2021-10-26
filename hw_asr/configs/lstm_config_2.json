@@ -4,7 +4,7 @@
   "text_encoder": {
     "type": "BPETextEncoder",
     "args": {
-      "model_path": "bpe_saved/bpe.model"
+      "model_path": "hw_asr/bpe_saved/bpe.model"
     }
   },
   "preprocessing": {
@@ -92,15 +92,15 @@
   },
   "data": {
     "train": {
-      "batch_size": 20,
+      "batch_size": 3,
       "num_workers": 5,
       "datasets": [
         {
           "type": "LJDirAudioDataset",
           "args": {
-            "max_audio_length": 20.0,
-            "max_text_length": 200,
-            "limit": 20
+            "audio_dir": "data/datasets/lj/wavs",
+            "transcription_csv": "data/datasets/lj/metadata.csv",
+            "limit": 3
           }
         }
       ]

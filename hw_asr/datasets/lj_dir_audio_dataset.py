@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class LJDirAudioDataset(CustomAudioDataset):
-    def __init__(self, audio_dir, transcription_csv=None, *args, **kwargs):
+    def __init__(self, audio_dir, transcription_csv, *args, **kwargs):
         data = []
         transc_csv = pd.read_csv(transcription_csv, delimiter='|', header=None)
         transc_csv.rename(columns={0: 'id', 1: 'text', 2: 'norm_text'}, inplace=True)
