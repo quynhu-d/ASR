@@ -20,8 +20,10 @@ class BPETextEncoder(CTCCharTextEncoder):
                 model_path = str(Path(model_path) / "bpe.model")
             self.bpe = yttm.BPE.train(train_data, vocab_size=vocab_size, model=model_path)
         else:
+            print(model_path)
             self.bpe = yttm.BPE(model_path)
         super().__init__(self.bpe.vocab())
+        print("BPE model opened, some tokens:", self.bpe.vocab()[:10])
 
     def encode(self, text) -> Tensor:
         text = self.normalize_text(text)
@@ -31,9 +33,11 @@ class BPETextEncoder(CTCCharTextEncoder):
             raise Exception(f"Can't encode text '{text}'.")
 
     def decode(self, vector: Union[Tensor, np.ndarray, List[int]]):
+        if isinstance(vector, Tensor):
+            vector = vector.tolist()
         if len(vector) == 0:
             return ""
-        return self.bpe.decode(vector.tolist())[0].strip()
+        return self.bpe.decode(vector)[0].strip()
 
     def ctc_decode(self, inds: List[int]) -> str:
         res = []
