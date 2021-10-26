@@ -53,4 +53,4 @@ class BPETextEncoder(CTCCharTextEncoder):
                 last_blank = False
         if len(res) == 0:
             return ""
-        return self.decode(res)[0]
+        return self.bpe.decode(res)[0]

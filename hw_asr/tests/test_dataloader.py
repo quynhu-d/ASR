@@ -50,6 +50,10 @@ class TestLJDataloader(unittest.TestCase):
         config_parser = ConfigParser.get_default_configs()
 
         data_dir = ROOT_PATH / "data" / "datasets" / "lj"
+        if not Path(data_dir).is_dir():
+            print('LJ data not loaded at %s' % str(Path(data_dir)))
+            return
+
         ds = LJDirAudioDataset(
             Path(data_dir / 'wavs'), Path(data_dir / 'metadata.csv'),
             text_encoder=text_encoder, config_parser=config_parser
