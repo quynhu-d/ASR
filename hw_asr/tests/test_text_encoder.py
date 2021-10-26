@@ -25,7 +25,7 @@ class TestTextEncoder(unittest.TestCase):
             self.assertAlmostEqual(el_true, el_hypos)
 
     def test_bpe_encoder(self):
-        text_encoder = BPETextEncoder(train_data='../../data/datasets/librispeech/dev_clean_texts.txt')
+        # text_encoder = BPETextEncoder(train_data='../../data/datasets/librispeech/dev_clean_texts.txt')
         model_path = Path(ROOT_PATH / "hw_asr" / "bpe_saved" / "bpe.model")
         text_encoder = BPETextEncoder(model_path=str(model_path))
         print("BPE vocab size:", text_encoder.bpe.vocab_size())

@@ -239,7 +239,7 @@ class Trainer(BaseTrainer):
 
     def _log_audio(self, audio_batch):
         audio = random.choice(audio_batch)
-        self.writer.add_audio("audio", audio)
+        self.writer.add_audio("audio", audio, self.config["preprocessing"]["sr"])
 
     @torch.no_grad()
     def get_grad_norm(self, norm_type=2):
