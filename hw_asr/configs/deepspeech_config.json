@@ -1,5 +1,5 @@
 {
-  "name": "quartznet_config",
+  "name": "deepspeech_config",
   "n_gpu": 1,
   "preprocessing": {
     "sr": 16000,
@@ -90,7 +90,9 @@
         {
           "type": "LibrispeechDataset",
           "args": {
-            "part": "train-clean-360"
+            "part": "train-clean-360",
+            "data_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/librispeech"
+
           }
         }
       ]
@@ -104,17 +106,17 @@
           "args": {
             "part": "dev-clean",
             "max_audio_length": 60.0,
-            "max_text_length": 300
+            "max_text_length": 300,
+            "data_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/librispeech"
           }
         }
       ]
     }
   },
   "optimizer": {
-    "type": "Adagrad",
+    "type": "AdamW",
     "args": {
-      "lr": 0.05,
-      "weight_decay": 0.001
+      "lr": 6e-4
     }
   },
   "loss": {
@@ -136,9 +138,12 @@
     }
   ],
   "lr_scheduler": {
-    "type": "CosineAnnealingWarmRestarts",
+    "type": "OneCycleLR",
     "args": {
-      "T_0": 1000
+      "max_lr": 6e-4,
+      "epochs": 400,
+      "steps_per_epoch": 100,
+      "anneal_strategy": "linear"
     }
   },
   "trainer": {
@@ -148,6 +153,7 @@
     "verbosity": 2,
     "monitor": "min val_loss",
     "early_stop": 100,
+    "len_epoch": 100,
     "visualize": "wandb",
     "wandb_project": "asr_project",
     "grad_norm_clip": 10

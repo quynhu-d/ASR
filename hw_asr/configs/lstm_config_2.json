@@ -1,12 +1,17 @@
 {
-  "name": "quartznet_config_2",
+  "name": "lstm_2_config",
   "n_gpu": 1,
+  "text_encoder": {
+    "type": "BPETextEncoder",
+    "args": {
+      "model_path": "bpe_saved/bpe.model"
+    }
+  },
   "preprocessing": {
     "sr": 16000,
     "spectrogram": {
       "type": "MelSpectrogram",
       "args": {
-        "n_mels": 64
       }
     }
   },
@@ -15,7 +20,7 @@
       {
         "type": "AddColoredNoise",
         "args": {
-          "p": 0.2,
+          "p": 0.5,
           "sample_rate": 16000,
           "min_f_decay": -4.0,
           "max_f_decay": 4.0
@@ -41,7 +46,6 @@
       {
         "type": "Shift",
         "args": {
-          "p": 0.2,
           "min_shift": -0.5,
           "max_shift": 0.5,
           "rollover": true
@@ -60,7 +64,7 @@
         "type": "TimeStretch",
         "args": {
           "n_freq": 128,
-          "min_rate": 0.8,
+          "min_rate": 0.7,
           "max_rate": 1.2
         }
       },
@@ -79,45 +83,33 @@
     ]
   },
   "arch": {
-    "type": "QuartzNet",
+    "type": "LSTMModel",
     "args": {
-      "n_feats": 64,
-      "n_bblocks": 1
+
+      "n_feats": 128,
+      "fc_hidden": 256
     }
   },
   "data": {
     "train": {
-      "batch_size": 32,
+      "batch_size": 20,
       "num_workers": 5,
       "datasets": [
         {
           "type": "LJDirAudioDataset",
           "args": {
-            "audio_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/LJSpeech-1.1/wavs",
-            "transcription_csv": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/LJSpeech-1.1/metadata.csv"
-          }
-        }
-      ]
-    },
-    "val": {
-      "batch_size": 32,
-      "num_workers": 5,
-      "datasets": [
-        {
-          "type": "LibrispeechDataset",
-          "args": {
-            "part": "dev-clean",
-            "data_dir": "/home/jupyter/mnt/s3/bucket-hse-rw/data/datasets/librispeech"
+            "max_audio_length": 20.0,
+            "max_text_length": 200,
+            "limit": 20
           }
         }
       ]
     }
   },
   "optimizer": {
-    "type": "AdamW",
+    "type": "Adam",
     "args": {
-      "lr": 3e-4,
-      "weight_decay": 1e-5
+      "lr": 3e-4
     }
   },
   "loss": {
@@ -141,22 +133,23 @@
   "lr_scheduler": {
     "type": "OneCycleLR",
     "args": {
-      "max_lr": 6e-4,
-      "epochs": 500,
       "steps_per_epoch": 100,
-      "anneal_strategy": "linear"
+      "epochs": 50,
+      "anneal_strategy": "cos",
+      "max_lr": 4e-3,
+      "pct_start": 0.2
     }
   },
   "trainer": {
-    "epochs": 500,
+    "epochs": 50,
     "save_dir": "saved/",
     "save_period": 5,
     "verbosity": 2,
     "monitor": "min val_loss",
     "early_stop": 100,
     "visualize": "wandb",
-    "len_epoch": 100,
     "wandb_project": "asr_project",
+    "len_epoch": 100,
     "grad_norm_clip": 10
   }
 }
