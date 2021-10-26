@@ -28,8 +28,11 @@ def main(config):
     logger = config.get_logger("train")
 
     # text_encoder
-    if config["text_encoder"]["type"] == "BPETextEncoder":
-        text_encoder = BPETextEncoder(config["text_encoder"]["args"]["model_path"])
+    if "text_encoder" in config.config.keys():
+        if config["text_encoder"]["type"] == "BPETextEncoder":
+            text_encoder = BPETextEncoder(config["text_encoder"]["args"]["model_path"])
+        else:
+            text_encoder = CTCCharTextEncoder.get_simple_alphabet()
     else:
         text_encoder = CTCCharTextEncoder.get_simple_alphabet()
 
