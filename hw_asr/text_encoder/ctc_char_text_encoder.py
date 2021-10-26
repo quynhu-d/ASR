@@ -5,7 +5,7 @@ from collections import defaultdict
 from tqdm import tqdm
 
 from hw_asr.text_encoder.char_text_encoder import CharTextEncoder
-
+import numpy as np
 
 class CTCCharTextEncoder(CharTextEncoder):
     EMPTY_TOK = "^"
@@ -38,8 +38,8 @@ class CTCCharTextEncoder(CharTextEncoder):
         Performs beam search and returns a list of pairs (hypothesis, hypothesis probability).
         """
         assert len(probs.shape) == 2
-        probs = probs[:probs_length, :]
-        char_length, voc_size = probs.shape
+        log_probs = np.log(probs[:probs_length, :])
+        char_length, voc_size = log_probs.shape
         assert voc_size == len(self.ind2char)
 
         def extend_and_merge(next_char_probs, src_paths):
@@ -57,7 +57,7 @@ class CTCCharTextEncoder(CharTextEncoder):
 
         # hypos = []
         paths = {('', self.EMPTY_TOK): 1.0}
-        for next_char_probs in tqdm(probs, desc="Beam search", leave=False) if verbose else probs:
+        for next_char_probs in tqdm(log_probs, desc="Beam search", leave=False) if verbose else probs:
             paths = extend_and_merge(next_char_probs, paths)
             paths = truncate_beam(paths, beam_size)
         hypos = [(prefix, score.item()) for (prefix, _), score in paths.items()]

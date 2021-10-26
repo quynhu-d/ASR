@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 import torch
-from tqdm import tqdm, trange
+from tqdm import tqdm
 
 import hw_asr.model as module_model
 from hw_asr.datasets.utils import get_dataloaders
@@ -57,18 +57,26 @@ def main(config, out_file):
             )
             batch["probs"] = batch["log_probs"].exp().cpu()
             batch["argmax"] = batch["probs"].argmax(-1)
-            for i in trange(len(batch["text"]), desc="Getting predictions for batch...", leave=False):
+            for i in range(len(batch["text"])):
                 argmax = batch["argmax"][i]
                 argmax = argmax[:int(batch["log_probs_length"][i])]
-                results.append(
-                    {
-                        "ground_trurh": batch["text"][i],
-                        "pred_text_argmax": text_encoder.ctc_decode(argmax),
-                        "pred_text_beam_search": text_encoder.ctc_beam_search(
-                            batch["probs"][i], batch["log_probs_length"][i], beam_size=100
-                        )[:10],
-                    }
-                )
+                if config["data"]["test"]["beam_search"]:
+                    results.append(
+                        {
+                            "ground_trurh": batch["text"][i],
+                            "pred_text_argmax": text_encoder.ctc_decode(argmax),
+                            "pred_text_beam_search": text_encoder.ctc_beam_search(
+                                batch["probs"][i], batch["log_probs_length"][i], beam_size=100
+                            )[:10],
+                        }
+                    )
+                else:
+                    results.append(
+                        {
+                            "ground_trurh": batch["text"][i],
+                            "pred_text_argmax": text_encoder.ctc_decode(argmax)
+                        }
+                    )
     with Path(out_file).open("w") as f:
         json.dump(results, f, indent=2)
 
