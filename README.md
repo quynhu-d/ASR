@@ -1,4 +1,4 @@
-# ASR homework
+# ASR Project
 
 ## Installation
 
